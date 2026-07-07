@@ -46,8 +46,14 @@ function CustomerDashboard() {
         try {
 
             await api.post("/tickets", ticket);
+            const time = new Date().getHours()
+            if (time>12){
+                alert("Ticket Created Successfully! in afternoon",);
 
-            alert("Ticket Created Successfully!");
+            }
+            else{
+                alert("Ticket Created SuccessFull in morning")
+            }
 
            
         } catch (error) {
@@ -78,7 +84,7 @@ function CustomerDashboard() {
                 value={ticket.description}
                 onChange={handleChange}
             />
-
+            <h5>Priority:</h5>
             <select
                 className="form-control mb-3"
                 name="priority"
@@ -92,6 +98,7 @@ function CustomerDashboard() {
 
             </select>
 
+            <h5>Category:</h5>
             <select
                 className="form-control mb-3"
                 name="categoryId"
@@ -120,9 +127,7 @@ function CustomerDashboard() {
             >
                 Create Ticket
             </button>
-
         </div>
-
     );
 
 }
