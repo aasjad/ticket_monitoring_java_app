@@ -3,6 +3,7 @@ package com.ticketmonitor.ticket_monitoring_java_app.service;
 import com.ticketmonitor.ticket_monitoring_java_app.dto.UserRequestDto;
 import com.ticketmonitor.ticket_monitoring_java_app.dto.UserResponseDto;
 import com.ticketmonitor.ticket_monitoring_java_app.entity.User;
+import com.ticketmonitor.ticket_monitoring_java_app.enums.UserRole;
 import com.ticketmonitor.ticket_monitoring_java_app.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -81,6 +82,15 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new RuntimeException("User not found with id : " + id));
 
         userRepository.delete(user);
+    }
+
+    @Override
+    public List<UserResponseDto> getUsersByRole(UserRole role) {
+
+        return userRepository.findByRole(role)
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
 
     private UserResponseDto mapToResponse(User user) {

@@ -18,8 +18,6 @@ public class TicketRequestDto {
 
     private Long reporterId;
 
-    private Long assigneeId;
-
     private Long categoryId;
 
 }

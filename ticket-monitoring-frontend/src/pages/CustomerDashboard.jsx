@@ -9,23 +9,30 @@ function CustomerDashboard() {
         title: "",
         description: "",
         priority: "LOW",
-        reporterId: 2,
-        assigneeId: 4,
+        reporterId: 9,
         categoryId: ""
     });
 
-    useEffect(() => {
-        loadCategories();
-    }, []);
+   useEffect(() => {
+    console.log("Customer Dashboard Loaded");
+    loadCategories();
+}, []);
 
     const loadCategories = async () => {
-        try {
-            const response = await api.get("/categories");
-            setCategories(response.data);
-        } catch (error) {
-            console.log(error);
-        }
-    };
+    console.log("Loading categories...");
+
+    try {
+        const response = await api.get("/categories");
+
+        console.log("Response:", response);
+        console.log("Categories:", response.data);
+
+        setCategories(response.data);
+
+    } catch (error) {
+        console.error("Category Error:", error);
+    }
+};
 
     const handleChange = (e) => {
         setTicket({
@@ -42,15 +49,7 @@ function CustomerDashboard() {
 
             alert("Ticket Created Successfully!");
 
-            setTicket({
-                title: "",
-                description: "",
-                priority: "LOW",
-                reporterId: 2,
-                assigneeId: 4,
-                categoryId: ""
-            });
-
+           
         } catch (error) {
             console.log(error);
             alert("Failed to create ticket");

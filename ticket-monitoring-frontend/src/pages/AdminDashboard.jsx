@@ -1,95 +1,159 @@
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import api from "../services/api";
 
 function AdminDashboard() {
 
-    const navigate = useNavigate();
+    const [tickets, setTickets] = useState([]);
+    const [agents, setAgents] = useState([]);
+    const [selectedAgent, setSelectedAgent] = useState({});
+
+    useEffect(() => {
+        loadTickets();
+        loadAgents();
+    }, []);
+
+    const loadTickets = async () => {
+        try {
+            const response = await api.get("/tickets");
+            setTickets(response.data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const loadAgents = async () => {
+        try {
+            const response = await api.get("/users/agents");
+            setAgents(response.data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const assignTicket = async (ticketId) => {
+
+        const assigneeId = selectedAgent[ticketId];
+
+        if (!assigneeId) {
+            alert("Please select an agent");
+            return;
+        }
+
+        try {
+
+            await api.put(`/tickets/${ticketId}/assign`, {
+                assigneeId: Number(assigneeId)
+            });
+
+            alert("Ticket Assigned Successfully");
+
+            loadTickets();
+
+        } catch (error) {
+            console.log(error);
+            alert("Assignment Failed");
+        }
+    };
 
     return (
 
         <div className="container mt-5">
 
-            <div className="d-flex justify-content-between align-items-center">
+            <h2 className="mb-4">
+                Admin Dashboard
+            </h2>
 
-                <h2>🛠 Admin Dashboard</h2>
+            <table className="table table-bordered table-hover">
 
-                <button
-                    className="btn btn-secondary"
-                    onClick={() => navigate("/")}
-                >
-                    Home
-                </button>
+                <thead className="table-dark">
 
-            </div>
+                <tr>
 
-            <div className="row mt-4">
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Reporter</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Assigned Agent</th>
+                    <th>Select Agent</th>
+                    <th>Action</th>
 
-                <div className="col-md-4">
+                </tr>
 
-                    <div className="card shadow">
+                </thead>
 
-                        <div className="card-body">
+                <tbody>
 
-                            <h4>👥 Users</h4>
+                {tickets.map(ticket => (
 
-                            <p>
-                                Manage Customers & Agents
-                            </p>
+                    <tr key={ticket.id}>
 
-                            <button className="btn btn-primary w-100">
-                                Manage Users
+                        <td>{ticket.id}</td>
+
+                        <td>{ticket.title}</td>
+
+                        <td>{ticket.reporterName}</td>
+
+                        <td>{ticket.priority}</td>
+
+                        <td>{ticket.status}</td>
+
+                        <td>{ticket.assigneeName || "Not Assigned"}</td>
+
+                        <td>
+
+                            <select
+
+                                className="form-select"
+
+                                value={selectedAgent[ticket.id] || ""}
+
+                                onChange={(e) =>
+                                    setSelectedAgent({
+                                        ...selectedAgent,
+                                        [ticket.id]: e.target.value
+                                    })
+                                }
+
+                            >
+
+                                <option value="">
+                                    Select Agent
+                                </option>
+
+                                {agents.map(agent => (
+
+                                    <option
+                                        key={agent.id}
+                                        value={agent.id}
+                                    >
+                                        {agent.fullName}
+                                    </option>
+
+                                ))}
+
+                            </select>
+
+                        </td>
+
+                        <td>
+
+                            <button
+                                className="btn btn-primary"
+                                onClick={() => assignTicket(ticket.id)}
+                            >
+                                Assign
                             </button>
 
-                        </div>
+                        </td>
 
-                    </div>
+                    </tr>
 
-                </div>
+                ))}
 
-                <div className="col-md-4">
+                </tbody>
 
-                    <div className="card shadow">
-
-                        <div className="card-body">
-
-                            <h4>📂 Categories</h4>
-
-                            <p>
-                                Add or Remove Categories
-                            </p>
-
-                            <button className="btn btn-success w-100">
-                                Manage Categories
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <div className="col-md-4">
-
-                    <div className="card shadow">
-
-                        <div className="card-body">
-
-                            <h4>🎫 Tickets</h4>
-
-                            <p>
-                                View All Tickets
-                            </p>
-
-                            <button className="btn btn-warning w-100">
-                                View Tickets
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
+            </table>
 
         </div>
 

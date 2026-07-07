@@ -1,82 +1,95 @@
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import api from "../services/api";
 
 function AgentDashboard() {
 
-    const navigate = useNavigate();
+    const [tickets, setTickets] = useState([]);
+
+    useEffect(() => {
+        loadTickets();
+    }, []);
+
+    const loadTickets = async () => {
+        try {
+            const response = await api.get("/tickets");
+            setTickets(response.data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const updateStatus = async (id, status) => {
+
+        try {
+
+            await api.put(`/tickets/${id}/status`, {
+                status: status
+            });
+
+            loadTickets();
+
+        } catch (error) {
+            console.log(error);
+        }
+
+    };
 
     return (
 
         <div className="container mt-5">
 
-            <div className="d-flex justify-content-between align-items-center mb-4">
+            <h2>Assigned Tickets</h2>
 
-                <h2>🎧 Agent Dashboard</h2>
+            <table className="table table-bordered">
 
-                <button
-                    className="btn btn-secondary"
-                    onClick={() => navigate("/")}
-                >
-                    Home
-                </button>
+                <thead>
 
-            </div>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
 
-            <div className="card shadow">
+                </thead>
 
-                <div className="card-header bg-primary text-white">
-                    Assigned Tickets
-                </div>
+                <tbody>
 
-                <div className="card-body">
+                {tickets.map(ticket => (
 
-                    <table className="table table-bordered table-hover">
+                    <tr key={ticket.id}>
 
-                        <thead>
+                        <td>{ticket.id}</td>
+                        <td>{ticket.title}</td>
+                        <td>{ticket.priority}</td>
+                        <td>{ticket.status}</td>
 
-                        <tr>
+                        <td>
 
-                            <th>ID</th>
-                            <th>Title</th>
-                            <th>Customer</th>
-                            <th>Priority</th>
-                            <th>Status</th>
-                            <th>Action</th>
+                            <button
+                                className="btn btn-warning btn-sm me-2"
+                                onClick={() => updateStatus(ticket.id, "IN_PROGRESS")}
+                            >
+                                Start
+                            </button>
 
-                        </tr>
+                            <button
+                                className="btn btn-success btn-sm"
+                                onClick={() => updateStatus(ticket.id, "RESOLVED")}
+                            >
+                                Resolve
+                            </button>
 
-                        </thead>
+                        </td>
 
-                        <tbody>
+                    </tr>
 
-                        <tr>
+                ))}
 
-                            <td>1</td>
-                            <td>Laptop Issue</td>
-                            <td>Rahul Kumar</td>
-                            <td>HIGH</td>
-                            <td>OPEN</td>
+                </tbody>
 
-                            <td>
-
-                                <button className="btn btn-warning btn-sm me-2">
-                                    In Progress
-                                </button>
-
-                                <button className="btn btn-success btn-sm">
-                                    Resolve
-                                </button>
-
-                            </td>
-
-                        </tr>
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-            </div>
+            </table>
 
         </div>
 
