@@ -105,5 +105,9 @@ public class TicketController {
         return ticketService.getTicketsByAgent(agentId);
 
     }
+    @GetMapping("/assigned")
+    public List<TicketResponseDto> getAssignedTickets() {
+        return ticketService.getAssignedTickets();
+    }
 
 }

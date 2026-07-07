@@ -54,10 +54,10 @@ public class TicketServiceImpl implements TicketService {
         ticket.setReporter(reporter);
         ticket.setCategory(category);
 
-        // Customer does NOT assign agent
+        // No agent assigned initially
         ticket.setAssignee(null);
 
-        // Initial Status
+        // Ticket starts as OPEN
         ticket.setStatus(TicketStatus.OPEN);
 
         ticket.setCreatedAt(LocalDateTime.now());
@@ -68,7 +68,7 @@ public class TicketServiceImpl implements TicketService {
         return convertToResponse(saved);
     }
 
-    // ================= GET ALL =================
+    // ================= GET ALL TICKETS =================
 
     @Override
     public List<TicketResponseDto> getAllTickets() {
@@ -93,8 +93,7 @@ public class TicketServiceImpl implements TicketService {
     // ================= UPDATE =================
 
     @Override
-    public TicketResponseDto updateTicket(Long id,
-                                          TicketRequestDto request) {
+    public TicketResponseDto updateTicket(Long id, TicketRequestDto request) {
 
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
@@ -148,7 +147,6 @@ public class TicketServiceImpl implements TicketService {
         User agent = userRepository.findById(request.getAssigneeId())
                 .orElseThrow(() -> new RuntimeException("Agent not found"));
 
-        // Only AGENT can be assigned
         if (agent.getRole() != UserRole.AGENT) {
             throw new RuntimeException("Selected user is not an Agent");
         }
@@ -162,13 +160,25 @@ public class TicketServiceImpl implements TicketService {
         return convertToResponse(saved);
     }
 
-    // ================= AGENT TICKETS =================
+    // ================= TICKETS OF ONE AGENT =================
 
     @Override
     public List<TicketResponseDto> getTicketsByAgent(Long agentId) {
 
         return ticketRepository.findByAssigneeId(agentId)
                 .stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+
+    // ================= ALL ASSIGNED TICKETS =================
+
+    @Override
+    public List<TicketResponseDto> getAssignedTickets() {
+
+        return ticketRepository.findAll()
+                .stream()
+                .filter(ticket -> ticket.getAssignee() != null)
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
     }
@@ -213,6 +223,4 @@ public class TicketServiceImpl implements TicketService {
 
         return response;
     }
-
-
 }

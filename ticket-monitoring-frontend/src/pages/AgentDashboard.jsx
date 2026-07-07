@@ -11,7 +11,7 @@ function AgentDashboard() {
 
     const loadTickets = async () => {
         try {
-            const response = await api.get("/tickets");
+            const response = await api.get("/tickets/assigned");
             setTickets(response.data);
         } catch (error) {
             console.log(error);
@@ -38,54 +38,63 @@ function AgentDashboard() {
 
         <div className="container mt-5">
 
-            <h2>Assigned Tickets</h2>
+            <h2 className="mb-4">Agent Dashboard</h2>
 
-            <table className="table table-bordered">
+            <table className="table table-bordered table-hover">
 
-                <thead>
+                <thead className="table-dark">
 
-                <tr>
-                    <th>ID</th>
-                    <th>Title</th>
-                    <th>Priority</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Reporter</th>
+                        <th>Assigned Agent</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
 
                 </thead>
 
                 <tbody>
 
-                {tickets.map(ticket => (
+                    {tickets.map(ticket => (
 
-                    <tr key={ticket.id}>
+                        <tr key={ticket.id}>
 
-                        <td>{ticket.id}</td>
-                        <td>{ticket.title}</td>
-                        <td>{ticket.priority}</td>
-                        <td>{ticket.status}</td>
+                            <td>{ticket.id}</td>
 
-                        <td>
+                            <td>{ticket.title}</td>
 
-                            <button
-                                className="btn btn-warning btn-sm me-2"
-                                onClick={() => updateStatus(ticket.id, "IN_PROGRESS")}
-                            >
-                                Start
-                            </button>
+                            <td>Customer</td>
 
-                            <button
-                                className="btn btn-success btn-sm"
-                                onClick={() => updateStatus(ticket.id, "RESOLVED")}
-                            >
-                                Resolve
-                            </button>
+                            <td>{ticket.assigneeName}</td>
 
-                        </td>
+                            <td>{ticket.priority}</td>
 
-                    </tr>
+                            <td>{ticket.status}</td>
 
-                ))}
+                            <td>
+
+                                <button
+                                    className="btn btn-warning btn-sm me-2"
+                                    onClick={() => updateStatus(ticket.id, "IN_PROGRESS")}
+                                >
+                                    Start
+                                </button>
+
+                                <button
+                                    className="btn btn-success btn-sm"
+                                    onClick={() => updateStatus(ticket.id, "RESOLVED")}
+                                >
+                                    Resolve
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                    ))}
 
                 </tbody>
 

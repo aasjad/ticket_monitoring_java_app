@@ -9,23 +9,30 @@ import java.util.List;
 
 public interface TicketService {
 
+    // Create Ticket
     TicketResponseDto createTicket(TicketRequestDto request);
 
+    // Get All Tickets (Admin)
     List<TicketResponseDto> getAllTickets();
 
+    // Get Ticket By Id
     TicketResponseDto getTicketById(Long id);
 
-    TicketResponseDto updateTicket(Long id,
-                                   TicketRequestDto request);
+    // Update Complete Ticket
+    TicketResponseDto updateTicket(Long id, TicketRequestDto request);
 
-    TicketResponseDto updateTicketStatus(Long id,
-                                         TicketStatusRequestDto request);
+    // Update Ticket Status (Agent)
+    TicketResponseDto updateTicketStatus(Long id, TicketStatusRequestDto request);
 
-    TicketResponseDto assignTicket(Long id,
+    // Assign Ticket to Agent (Admin)
+    TicketResponseDto assignTicket(Long ticketId,
                                    AssignTicketRequestDto request);
 
+    // Get Tickets Assigned to One Agent
     List<TicketResponseDto> getTicketsByAgent(Long agentId);
 
-    void deleteTicket(Long id);
+    List<TicketResponseDto> getAssignedTickets();
 
+    // Delete Ticket
+    void deleteTicket(Long id);
 }
